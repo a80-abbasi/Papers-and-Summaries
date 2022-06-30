@@ -1,0 +1,110 @@
+\documentclass[]{article}
+
+\usepackage{amsmath, amssymb}
+
+\newcommand{\T}{^T}
+
+%opening
+\title{Support Vector Machines and Kernels}
+\author{}
+
+\begin{document}
+
+\maketitle
+
+%\begin{abstract}
+%
+%\end{abstract}
+
+\section{SVM}
+\begin{itemize}
+\item
+\textbf{Classification:}\\
+$N$ training vectors $\{(x_i, y_i)\}$, where $x\in 	\mathbb{R}^D$ and $y\in \{-1, 1\}$.
+
+\item 
+\textbf{Classifier:}
+\begin{align*}
+	f(x) &= w\T \phi(X) + b\\
+	\hat{y} &= sign(f(x))
+\end{align*}
+
+\item \textbf{Maximum Margin Method:} for a linearly separable dataset:
+\begin{align*}
+\max_{w, b} \min_{i} dist(x_i, w, b)\\
+s.t.:\ \forall i:\ y_i(w\T \phi(x_i) + b \geq 0)
+\end{align*}
+Distance from a datapoint $\phi(x_i)$ to a hyperplane $w\T \phi(X) + b = 0$ is:
+\begin{equation*}
+\frac{\vert w\T \phi(x) + b\vert}{\Vert w\Vert} = \frac{y_i(w\T \phi(x) + b)}{\Vert w\Vert}
+\end{equation*}
+
+Assuming $w, b$ such that nearest point to the hyperplane have $y_i(w\T \phi(x) + b) = 1$ our objective becomes:
+\begin{align*}
+\max_{w, b} \frac{1}{\Vert w\Vert} \equiv \min_{w, b} \frac{1}{2}\Vert w\Vert^2
+\tag{A quadratic program}\\
+s.t.:\ \forall i:\ y_i(w\T \phi(x_i) + b \geq 1)
+\end{align*}
+
+\item \textbf{Support Vectors:} Datapoints close to margin.
+\item \textbf{Slack Variables:} We need those for non-separable datasets.\\
+A slack variable for each datapoint, $ \xi $, that shows how much that datapoint can violate the \textit{margin constraint} (and of course will be punished accordingly!). New optimization problem:
+\begin{align*}
+\min_{w, b, \xi_{1:N}}\sum_{i}\xi_i + \lambda \frac{1}{2}\Vert w\Vert^2\\
+	s.t.:\ \forall i:\ y_i(w\T \phi(x_i) + b \geq 1-\xi_i \textup{ and } \xi_i \geq 0)
+\end{align*}
+
+\item \textbf{Loss Functions}
+\begin{itemize}
+\item 0-1 Loss:\\
+\begin{equation*}
+L_{0-1} (x, y) = 
+\begin{cases}
+1 \ \ yf(x) < 0\\
+0 \ \ \textup{otherwise}
+\end{cases}
+\end{equation*}
+\item Logistic Regression:
+\begin{equation}
+L_{LR} = \ln(1 + e^{-yf(x)})
+\end{equation}
+
+\item Hinge Loss:
+\[ \begin{cases}
+	1-yf(X) \ \ yf(x) < 0\\
+	0 \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textup{otherwise}
+\end{cases} \]
+\end{itemize}
+\end{itemize}
+\section{Largrangian and the Kernel Trick}
+Using Lagrangian (and assuming linearly separability) 
+\begin{align*}
+L(w, b, a_{1:N}) &= \frac{1}{2}\Vert w\Vert ^2 - \sum_i a_i(y_i(w\T\phi(x_i) + b) - 1)\\
+w &= \sum_i a_iy_i\phi(x_i) \\
+\sum_iy_ia_i = 0
+\end{align*}
+Dual Lagrangian:
+\begin{align*}
+	L(a_{1:N}) = \sum_ia_i - \frac{1}{2} \sum_i\sum_j a_ia_jy_1y_2 \phi(x_i)\T\phi(x_j)
+\end{align*}
+With using kernel funcion:
+\begin{align*}
+L(a_{1:N}) = \sum_ia_i - \frac{1}{2} \sum_i\sum_j a_ia_jy_1y_2 k(x_i, x_j)
+\end{align*}
+\begin{itemize}
+\item \textbf{Popular kernels:}
+\begin{itemize}
+\item Polynomial kernel: \[ k(x, z) =(x_i \cdot x_j + 1)^d\]
+\item Gaussian kernel:
+\[ k(x, z) =e^{-\frac{\Vert x-z\Vert^2}{2\sigma^2}}\]
+\item RBF kernel:
+\[ k(x, z) =e^{-\gamma \Vert x-z\Vert^2}\]
+\end{itemize}
+\item \textbf{Predicting:}
+\begin{align*}
+f(x_{new}) &= w\T\phi(x_new) + b\\
+&= \left(\sum_ia_iy_i\phi(x_i)\right)\T\phi(x_j) + b\\
+&= \sum_ia_iy_ik(x_i, x_{new}) + b
+\end{align*}
+\end{itemize}
+\end{document}

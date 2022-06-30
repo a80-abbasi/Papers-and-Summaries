@@ -1,0 +1,2 @@
+Bishop
+https://towardsdatascience.com/the-kernel-trick-c98cdbcaeb3f
