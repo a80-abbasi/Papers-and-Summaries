@@ -57,7 +57,7 @@ If most of training data is normal, we can use a simplified form of above object
 \begin{itemize}
 \item 
 If $ \mathcal{W}_0 $ be the set of all-zero weights and $ c_0 = \phi(x;\mathcal{W}) $ (for any input point x) setting $ c = c_0 $ will result in trivial solustion $ \mathcal{W}^* = \mathcal{W}_0$ and $ R^* = 0 $ with zero loss (hypersphere collapse). Similarly, including hypersphere center in optimization variables will result in the same behavior. Fixing $ c $ as the mean of the result of performing an initial (untrained) forward pass on some training data is a good candidate and making convergence faster and more robust.
-\item Having a bias term or a bounded activation funcion can result in learning center of hypersphere with zero weights. Thus bias terms and bounded activations should not be used in neural networks with Depp SVDD.
+\item Having a bias term or a bounded activation funcion can result in learning the center of hypersphere directly with $ \mathcal{W}_0 $ weights. Thus bias terms and bounded activations should not be used in neural networks with Depp SVDD.
 
 \item \textbf{$ \nu $-property}: Hyperparameter $ \nu $ in soft-boundary Deep SVDD objective in (\ref{softBoundary}), is an upper bound on the fraction of outliers.
 \end{itemize}
