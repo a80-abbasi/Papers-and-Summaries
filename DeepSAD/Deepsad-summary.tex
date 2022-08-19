@@ -1,0 +1,45 @@
+\documentclass[a4]{article}
+\usepackage{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{comment}
+
+\newcommand{\information}{\mathcal{I}}
+
+%opening
+\title{\textsc{Deep Semi-Supervised Anomaly Detection}}
+\author{}
+
+\begin{document}
+\maketitle
+\section{Information Theory view on Deep Anomaly Detection}
+In the supervised classification where we have input variable X, latent variable Z (e.g., the final layer of a deep network), and output variable Y (i.e., the label), we aim to find a minimal compression Z of input X, while retaining informativeness of Z for predicting label Y, i.e.
+\begin{equation}
+\min_{p(z|x)} \information(X; Z) - \alpha \information(Z; Y)
+\end{equation}
+where $\alpha$ is hyperparameter for trade-off between compression and classification accuracy.
+
+In unsupervised learning, one of most widely used principals is \textit{Infomax Principle}, which maximizes the mutual information $\information(X; Z)$ between data and its latent representation under some constraint or regularization $\mathcal{R}(Z)$:
+\begin{equation}
+	\max_{p(z|x)} \information(X; Z) + \beta \mathcal{R}(Z).
+	\label{max_info}
+\end{equation}
+The constraint term, $\mathcal{R}(Z)$, 	can be a distance to a prior distribution, an adverserial loss or bottleneck in dimensionality (e.g. autoencoders).
+
+\section{Deep Semi-Supervised Anomaly Detection}
+Supervised or semi-supervised methods for anomaly detection only learn to detect anomalies similar to those seen during training and for this reason, previous semi-supervised anomaly detection methods only used datapoints labeled as normal in their learning process, ignoring anomaly samples in labeled data. Tis paper proposes a way based on \textbf{Depp SVVD} (\ref{max_info}) to effectively use aomaly samples as well.
+
+With n unlabeld samples $x_1, \ldots x_n \in \mathcal{X} \subseteq \mathbb{R}^D$ and m labeled samples $(\hat{x}_1, \hat{y}_1), \ldots (\hat{x}_m, \hat{y}_m) \in \mathcal{X} \times \mathcal{Y}$ where $\mathcal{Y} = {-1, +1}$ with $-1$ for anomaly and $+1$ for normal samples, \textit{Deep SAD} objective is defined as:
+\begin{equation}
+	\begin{split}
+		\min_{\mathcal{W}} \frac{1}{n+m}\sum_{i=1}^{n} \Vert\phi(x_i) - c\Vert ^2 + \frac{\eta}{n+m}\sum_{j=1}^{m} \left(\Vert\phi(\hat{x}_j) - c\Vert ^2\right)^{\hat{y}_j} + \frac{\lambda}{2}\sum_{l=1}^{L}\Vert \mathbf{W}^l\Vert^2_F
+	\end{split}
+\end{equation}
+They same term as Deep SVVD is employed for unlabeled data and the second term, seeks to minimize variance of normal labeled data (in the same way as unlabeled) and maximize variance of anomaly labeled data, with punishing the inverse of the distances such that anomalies to our selected center.
+
+In terms of information theory, this objective function can be viewed as: 
+\begin{equation}
+	\max_{p(z|x)} \information(X; Z) + \beta (\mathcal{H}(Z^- - Z^+)).
+\end{equation}
+Where maximizing mutual information of X and Z is induced by using pretrained endcoder network of an autoencoder. Also $\mathcal{H}(Z)$ is entropy of latent variable, and as we know, if we assume Z follows a gaussian distribution, its entropy is proportional to its log-variance which we maximize and mimize for anomaly and normal samples respectively with penalizing their distance to $c$.
+\end{document}
+
