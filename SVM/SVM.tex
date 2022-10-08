@@ -80,8 +80,11 @@ L_{LR} = \ln(1 + e^{-yf(x)})
 Using Lagrangian (and assuming linearly separability) 
 \begin{align*}
 L(w, b, a_{1:N}) &= \frac{1}{2}\Vert w\Vert ^2 - \sum_i a_i(y_i(w\T\phi(x_i) + b) - 1)\\
-w &= \sum_i a_iy_i\phi(x_i) \\
+\Rightarrow
+&\begin{cases}
+w = \sum_i a_iy_i\phi(x_i) \\
 \sum_iy_ia_i = 0
+\end{cases}
 \end{align*}
 Dual Lagrangian:
 \begin{align*}
@@ -94,7 +97,7 @@ L(a_{1:N}) = \sum_ia_i - \frac{1}{2} \sum_i\sum_j a_ia_jy_1y_2 k(x_i, x_j)
 \begin{itemize}
 \item \textbf{Popular kernels:}
 \begin{itemize}
-\item Polynomial kernel: \[ k(x, z) =(x_i \cdot x_j + 1)^d\]
+\item Polynomial kernel: \[ k(x, z) =(x \cdot z + 1)^d\]
 \item Gaussian kernel:
 \[ k(x, z) =e^{-\frac{\Vert x-z\Vert^2}{2\sigma^2}}\]
 \item RBF kernel:
@@ -102,7 +105,7 @@ L(a_{1:N}) = \sum_ia_i - \frac{1}{2} \sum_i\sum_j a_ia_jy_1y_2 k(x_i, x_j)
 \end{itemize}
 \item \textbf{Predicting:}
 \begin{align*}
-f(x_{new}) &= w\T\phi(x_new) + b\\
+f(x_{new}) &= w\T\phi(x_{new}) + b\\
 &= \left(\sum_ia_iy_i\phi(x_i)\right)\T\phi(x_j) + b\\
 &= \sum_ia_iy_ik(x_i, x_{new}) + b
 \end{align*}
