@@ -1,0 +1,71 @@
+\documentclass[]{article}
+
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{parskip}
+
+%opening
+\title{Brain Optimal Damage}
+% \author{Ali Abbasi}
+
+\DeclareMathOperator*{\trace}{trace}
+\newcommand{\AHA}[1]{#1\hermit #1}
+\newcommand{\norm}[2][]{\Vert #2\Vert_{#1}}
+\DeclareMathOperator*{\rank}{rank}
+\newcommand{\hermit}{^H}
+\newcommand{\transpose}{^T}
+\newcommand{\ATA}[1]{#1\transpose #1}
+
+\begin{document}
+\maketitle
+\section{}
+The idea of pruning network weights after training, was first introduced by LeCun, et al.\ at paper \textbf{\href{https://proceedings.neurips.cc/paper/1989/file/6c9882bbac1c7093bd25041881277658-Paper.pdf}{Optimal Brain Damage}}.
+In this paper they suggest Taylor series approximation of degree 2 of the loss function to be used as a metric to find importance (saliency) of each weight in the network.
+And then they suggest to prune the weights with the lowest importance. Pruning in this context is done by setting the weights to zero and freezing them.
+
+\subsection{}
+So first, we find the effect of perturbing each weight on the loss function.
+Note that by setting a parameter to zero, the perturbation amount of that parameter is equal to the negative of value of that parameter itself.
+
+Taylor series approximation of the loss function is given by:
+\begin{align}
+\label{eq:1:Taylor}
+\delta E = \sum_i g_i \delta u_i + \frac{1}{2} \sum_{i, j} h_{ij} \delta u_i \delta u_j + \mathcal{O}(\norm{\delta U}^3) 
+\end{align}
+
+Where $u_i$s are weights and $U$ is the vector of all weights.
+$g_i$ is the gradient of the loss function with respect to the $i$th weight, $h_{ij}$ is the Hessian of the loss function with respect to the $i$th and $j$th weights, and $\delta U$ is the vector of perturbations of the weights:
+\begin{align}
+g_i = \frac{\partial E}{\partial u_i} \\
+h_{ij} = \frac{\partial^2 E}{\partial u_i \partial u_j}
+\end{align}
+
+So by considering \(\delta u_i = -u_i\) to make \(i\)th weight zero, we can find weights that have the least effect on the loss function and can set them to zero.
+
+But more practical way of using Eq.~\ref{eq:1:Taylor} will be introduced in the next subsection.
+
+\subsection{}
+As you know, computing the Hessian of the loss function is computationally expensive and of a \(O(n^2)\) complexity.
+So the paper uses another simplification, by assuming the Hessian to be diagonal.
+And as mentioned, pruning is done after training the network, so it will be on a local minima of the loss function and the gradients (\(g_i\)s) will be zero.
+And Eq.~\ref{eq:1:Taylor} will be simplified to:
+\begin{align}
+\delta E = \frac{1}{2} \sum_{i} h_{ii} \delta u_i^2
+\end{align}
+So saliency of weight \(u_i\) is given by:
+\begin{align}
+s_i = \frac{1}{2} h_{ii}u_i^2
+\end{align}
+and we can prune the weight(s) with the lowest saliency.
+
+So we can summarize the whole process as follows:
+\begin{enumerate}
+    \item Train the network until reaching a good solution (local minima of the loss function).
+    \item Compute saliency values for each weight.
+    \item Prune some of the weights with the lowest saliency.
+    \item Go to step 1.
+\end{enumerate} 
+
+
+\end{document}
