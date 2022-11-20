@@ -1,0 +1,1 @@
+This is part of my project in **Scientific and Technical Presentation** course, where we were supposed to summarize two of our favorite papers into a single paper as a practice to write real-world papers!

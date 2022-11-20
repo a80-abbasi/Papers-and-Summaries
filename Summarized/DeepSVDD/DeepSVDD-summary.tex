@@ -1,0 +1,66 @@
+\documentclass[a4]{article}
+\usepackage{geometry}
+\usepackage{amsmath, amssymb}
+
+%opening
+\title{Deep One-Class Classification}
+\author{}
+
+\begin{document}
+\maketitle
+
+
+\section{Related Work}
+\begin{enumerate}
+\item \textbf{Kernel Based Models:}\\
+\begin{enumerate}
+\item One Class SVM (OC-SVM): Finding a maximum margin hyperplane in feature space, seperating mapped data from origin:
+
+\item Support Vector Data Description (SVDD): Finding minimum radius hypersphere seperating mapped data in feature space:
+\begin{equation}
+\begin{split}
+\min_{R, c, \xi} R^2 + \frac{1}{\nu n}\sum_i \xi_i\\
+\textup{s.t.} \forall i : \Vert\phi_k(x_i) - c\Vert ^2 _{\mathcal{F}_k} \leq R^2 + \xi_i, \xi_i \geq 0
+\end{split}
+\end{equation}
+With $R$: radius, $c$: hypersphere's center in feature space, $ \xi_i \ $ slack variables and $ \nu \in (0, 1] $ hyperparameter controlling trade-off between radius and slack variable penalties.\\
+Points outside sphere are considered anomalous.
+
+\end{enumerate}
+\item \textbf{Deep Approaches:}\\
+\begin{enumerate}
+\item: Deep Autoencoders: These networks can extract common features of normal samples in their intermediate representation and reconstruct them accurately. Hence reconstruction error is a good metric for anomaly score.
+\item Generative Adverserial Networks (GANs)
+\end{enumerate}
+\end{enumerate}
+
+\section{Deep SVDD}
+Let $ \phi(.;\mathcal{W}) : \mathcal{X} \rightarrow \mathcal{F} $ be a neural network with $ L $ hidden layers with weights $ \mathcal{W} $.
+\textbf{Soft-boundary Deep SVDD} loss funcion:
+\begin{equation}
+\begin{split}
+\min_{R, \mathcal{W}} R^2 + \frac{1}{\nu n}\sum_{i=1}^{n} \max(0, \Vert\phi_k(x_i) - c\Vert ^2 - R^2) + \frac{\lambda}{2}\sum_{l=1}^{L}\Vert \mathbf{W}^l\Vert^2_F
+\end{split}
+\label{softBoundary}
+\end{equation}
+with radius $ R > 0 $ and center $ c \in \mathcal{F} $ and hyperparameter $ \nu $ controlling trade-off between volume of sphere and boundary violations.
+
+If most of training data is normal, we can use a simplified form of above objective, \textbf{One Class Deep SVDD} loss function:
+\begin{equation}
+	\begin{split}
+		\min_{\mathcal{W}} \frac{1}{n}\sum_{i=1}^{n} \Vert\phi_k(x_i) - c\Vert ^2 + \frac{\lambda}{2}\sum_{l=1}^{L}\Vert \mathbf{W}^l\Vert^2_F
+	\end{split}
+\end{equation}
+
+\noindent
+\textbf{Properties of Deep SVDD}\\
+\begin{itemize}
+\item 
+If $ \mathcal{W}_0 $ be the set of all-zero weights and $ c_0 = \phi(x;\mathcal{W}) $ (for any input point x) setting $ c = c_0 $ will result in trivial solustion $ \mathcal{W}^* = \mathcal{W}_0$ and $ R^* = 0 $ with zero loss (hypersphere collapse). Similarly, including hypersphere center in optimization variables will result in the same behavior. Fixing $ c $ as the mean of the result of performing an initial (untrained) forward pass on some training data is a good candidate and making convergence faster and more robust.
+\item Having a bias term or a bounded activation funcion can result in learning the center of hypersphere directly with $ \mathcal{W}_0 $ weights. Thus bias terms and bounded activations should not be used in neural networks with Depp SVDD.
+
+\item \textbf{$ \nu $-property}: Hyperparameter $ \nu $ in soft-boundary Deep SVDD objective in (\ref{softBoundary}), is an upper bound on the fraction of outliers.
+\end{itemize}
+
+\end{document}
+
